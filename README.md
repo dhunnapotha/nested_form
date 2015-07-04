@@ -1,6 +1,7 @@
 A quick hack for the recursive nested form problem. The original nested form gem falls apart if we want to add forms recursively. That is, for example, if we want to add sub-tasks within tasks and sub-sub-tasks within sub-tasks and so on in the same form.
 
 Changes are made to fix it.
+Pass in blueprint option in case of recursive forms as seen in [here](https://github.com/dhunnapotha/tagalys_ia/blob/master/app/views/projects/_task_fields.html.erb)
 
 ##### Details of the Sample App
 A sample app demonstrating it is in [here](https://github.com/dhunnapotha/tagalys_ia).
