@@ -6,55 +6,6 @@
 
   NestedFormEvents.prototype = {
 
-    // Functions added to fix the recursive nesting form problem!
-
-    getIdPrefixFromContext: function  (context) {
-      context = context.replace('][','_','g');
-      context = context.replace(']', '');
-      context = context.replace('[', '_');
-      return context;
-    },
-
-
-    rectifyNames: function (content, name_prefix, assoc) {
-      name_prefix += "["+ assoc +"_attributes]";
-      var new_assoc = "new_" + assoc;
-      var regexp = new RegExp('name=".*\\[' + new_assoc + '\\]');
-
-      var matched = content.match(regexp);
-      matched = matched[0].replace(/name="/g, "");
-
-      regexp = new RegExp('\\[' + new_assoc + '\\]')
-      var nested_prefix = matched.replace(regexp, "");
-      content = content.replace(nested_prefix, name_prefix, 'g');
-      return content;
-    },
-
-    rectifyIds: function  (content, id_prefix, assoc) {
-      id_prefix += "_" + assoc + "_attributes";
-      var new_assoc = "new_" + assoc;
-
-      var regexp = new RegExp('".*?' + new_assoc + '_.*?"');
-
-      var matched = content.match(regexp);
-      matched = matched[0].replace(/"/g, "");
-      regexp = new RegExp('_' + new_assoc + '_.*/');
-      var nested_prefix = matched.replace(regexp, "");
-      content = content.replace(nested_prefix, id_prefix, 'g');
-      return content;
-    },
-
-    // reconstruct the name, id values of the blueprint from the context.
-    rectifyContent: function  (content, context, assoc) {
-      var name_prefix = context;
-      var id_prefix = this.getIdPrefixFromContext(context);
-
-      content = this.rectifyNames(content, name_prefix, assoc);
-      content = this.rectifyIds(content, id_prefix, assoc);
-
-      return content;
-    },
-
     addFields: function(e) {
       // Setup
       var link      = e.currentTarget;
@@ -73,7 +24,7 @@
       if (context) {
         var parentNames = context.match(/[a-z_]+_attributes(?=\]\[(new_)?\d+\])/g) || [];
         var parentIds   = context.match(/[0-9]+/g) || [];
-        content = this.rectifyContent(content, context, assoc);
+        content = this.contentRectifierForRecursiveForms.rectifyContent(content, context, assoc);
       }
 
       // Make a unique ID for the new child
@@ -113,6 +64,53 @@
         .trigger({ type: 'nested:fieldRemoved', field: field })
         .trigger({ type: 'nested:fieldRemoved:' + assoc, field: field });
       return false;
+    },
+    // Functions added to fix the recursive nesting form problem!
+    contentRectifierForRecursiveForms: {
+      getIdPrefixFromContext: function (context) {
+        context = context.replace('[', '_', 'g').replace(']', '', 'g');
+        return context;
+      },
+
+      rectifyNames: function (content, name_prefix, assoc) {
+        name_prefix += "["+ assoc +"_attributes]";
+        var new_assoc = "new_" + assoc;
+        var regexp = new RegExp('name=".*\\[' + new_assoc + '\\]');
+
+        var matched = content.match(regexp);
+        matched = matched[0].replace(/name="/g, "");
+
+        regexp = new RegExp('\\[' + new_assoc + '\\]')
+        var nested_prefix = matched.replace(regexp, "");
+        content = content.replace(nested_prefix, name_prefix, 'g');
+        return content;
+      },
+
+      rectifyIds: function  (content, id_prefix, assoc) {
+        id_prefix += "_" + assoc + "_attributes";
+        var new_assoc = "new_" + assoc;
+
+        var regexp = new RegExp('".*?' + new_assoc + '_.*?"');
+
+        var matched = content.match(regexp);
+        matched = matched[0].replace(/"/g, "");
+        regexp = new RegExp('_' + new_assoc + '_.*/');
+        var nested_prefix = matched.replace(regexp, "");
+        content = content.replace(nested_prefix, id_prefix, 'g');
+        return content;
+      },
+
+      // reconstruct the name, id values of the blueprint from the context.
+      rectifyContent: function  (content, context, assoc) {
+        var name_prefix = context;
+        var id_prefix = this.getIdPrefixFromContext(context);
+
+        content = this.rectifyNames(content, name_prefix, assoc);
+        content = this.rectifyIds(content, id_prefix, assoc);
+
+        return content;
+      }
+
     }
   };
 
