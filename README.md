@@ -1,3 +1,19 @@
+A quick hack for the recursive nested form problem. The original nested form gem falls apart if we want to add forms recursively. That is, for example, if we want to add sub-tasks within tasks and sub-sub-tasks within sub-tasks and so on in the same form.
+
+Changes are made to fix it.
+
+##### Details of the Sample App
+A sample app demonstrating it is in [here](https://github.com/dhunnapotha/tagalys_ia).
+
+* Clone it
+* Run Migrations
+* Create a Project record from /projects
+* And then you should be able to create tasks inside projects recursively
+
+Let me know if you have any inputs. 
+The original documentation is given below. 
+
+
 # Nested Form
 
 [<img src="https://secure.travis-ci.org/ryanb/nested_form.png?branch=master" alt="Build Status" />](http://travis-ci.org/ryanb/nested_form)
